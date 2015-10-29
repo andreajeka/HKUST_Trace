@@ -250,34 +250,37 @@ public:
     TransformRoot transformRoot;
 
 public:
-	Scene() 
-		: transformRoot(), objects(), lights() {}
+	Scene() : transformRoot(), objects(), lights() {}
 	virtual ~Scene();
+	bool intersect(const ray& r, isect& i) const;
+	void initScene();
 
-	void add( Geometry* obj )
-	{
+	void add( Geometry* obj ) {
 		obj->ComputeBoundingBox();
 		objects.push_back( obj );
 	}
-	void add( Light* light )
-	{ lights.push_back( light ); }
 
-	bool intersect( const ray& r, isect& i ) const;
-	void initScene();
+	void add( Light* light ) { 
+		lights.push_back( light ); 
+	}
+
+	void addIa(vec3f ambientLight){
+		Ia += ambientLight;
+		Ia = Ia.clamp();
+	}
 
 	list<Light*>::const_iterator beginLights() const { return lights.begin(); }
 	list<Light*>::const_iterator endLights() const { return lights.end(); }
-        
 	Camera *getCamera() { return &camera; }
-
+	vec3f getIa() { return Ia; }
 	
-
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
 	list<Geometry*> boundedobjects;
     list<Light*> lights;
     Camera camera;
+	vec3f Ia;
 	
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()
