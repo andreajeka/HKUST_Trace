@@ -24,10 +24,12 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 
 	vec3f P = r.at(i.t); // point of intersection
 	for (list<Light*>::const_iterator j = scene->beginLights(); j != scene->endLights(); j++) {
-		vec3f attenuation = (*j)->distanceAttenuation(P) * (*j)->shadowAttenuation(P); // TODO: distance and shadow atten
+		// seems like there is no light source intensity in the ray file??
+
+		vec3f attenuation = (*j)->distanceAttenuation(P) * (*j)->shadowAttenuation(P);
 		
 		vec3f L = (*j)->getDirection(P); // light direction
-		vec3f diffuse = kd * maximum(i.N * L, 0); // ??
+		vec3f diffuse = kd * maximum(i.N * L, 0); // 
 
 		vec3f R = (2 * (i.N * L) * i.N) - L; // reflection
 		R = R.normalize();
