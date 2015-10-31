@@ -542,6 +542,14 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 				tupleToVec(getField(child, "position")), 
 				tupleToVec(getColorField(child))));
 		}
+
+		/*if (hasField(child, "constant_attenuation_coeff")) traceUI->setConstAttenuationVal(getField(child, "constant_attenuation_coeff")->getScalar());
+		if (hasField(child, "linear_attenuation_coeff")) traceUI->setLinearAttenuationVal(getField(child, "linear_attenuation_coeff")->getScalar());
+		if (hasField(child, "quadratic_attenuation_coeff")) traceUI->setQuadAttenuationVal(getField(child, "quadratic_attenuation_coeff")->getScalar());
+		PointLight* pointLight = new PointLight(scene,
+			tupleToVec(getField(child, "position")),
+			tupleToVec(getColorField(child)));
+		scene->add(pointLight);*/
 		
 	} else if (name == "ambient_light"){
 		if (child == NULL) {

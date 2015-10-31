@@ -243,6 +243,16 @@ double TraceUI::getDistanceScale() {
 	return m_nDistance;
 }
 
+void TraceUI::setConstAttenuationVal(double value){
+	m_nConstAttenuation = value;
+}
+void TraceUI::setLinearAttenuationVal(double value) {
+	m_nLinearAttenuation = value;
+}
+void TraceUI::setQuadAttenuationVal(double value) {
+	m_nQuadAttenuation = value;
+}
+
 // menu definition
 Fl_Menu_Item TraceUI::menuitems[] = {
 	{ "&File",		0, 0, 0, FL_SUBMENU },

@@ -3,6 +3,8 @@
 #include <Fl/fl_ask.h>
 
 #include "RayTracer.h"
+#include "global.h"
+#include "ui/TraceUI.h"
 #include "scene/light.h"
 #include "scene/material.h"
 #include "scene/ray.h"
@@ -17,13 +19,19 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
     ray r( vec3f(0,0,0), vec3f(0,0,0) );
     scene->getCamera()->rayThrough( x,y,r );
-	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ).clamp();
+	productKr = 1.0;
+	productKt = 1.0;
+	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0).clamp();
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
 vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth )
 {
+	if (depth > traceUI->getDepth()){
+		return vec3f(0.0, 0.0, 0.0);
+	}
+
 	isect i;
 
 	if( scene->intersect( r, i ) ) {
@@ -39,7 +47,73 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 		// rays.
 
 		const Material& m = i.getMaterial();
-		return m.shade(scene, r, i);
+
+		productKr = m.kr[0] ? productKr * m.kr[0] : productKr;
+		productKt = m.kt[0] ? productKt * m.kt[0] : productKt;
+
+		vec3f intensity = vec3f(0.0, 0.0, 0.0);
+		vec3f normal = i.N;
+		vec3f rayDirection = r.getDirection();
+
+		// Dot product between ray and normal is positive when a ray enters an object
+		bool enterMaterial = (normal.dot((-1)*rayDirection)) > RAY_EPSILON;
+
+		// Reverse the normal if a ray leaves the object
+		if (!enterMaterial) normal = i.N *= -1;
+
+		// Shade factor
+		intensity += m.shade(scene, r, i);
+
+		// Reflection is computed using (2*(N.(-d))*N) - (-d)
+		vec3f reflectedDirection = (2 * normal * normal.dot((-1)*rayDirection)) - (-1)*rayDirection;
+		ray reflectionRay = ray(r.at(i.t), reflectedDirection.normalize());
+	
+		// Reflection factor
+		if (productKr > thresh[0]) {
+			vec3f reflectionIntensity = traceRay(scene, reflectionRay, thresh, depth + 1);
+			intensity[0] += m.kr[0] * reflectionIntensity[0];
+			intensity[1] += m.kr[1] * reflectionIntensity[1];
+			intensity[2] += m.kr[2] * reflectionIntensity[2];
+		}
+
+		if (productKt > thresh[0]) {
+			// check if the object is transparent
+			if (m.kt != vec3f(0.0, 0.0, 0.0)){
+				bool enterMaterial = (normal.dot((-1)*rayDirection)) >= 0.0;
+				double n_i; // incoming refraction index
+				double n_t; // outgoing refraction index
+
+				if (enterMaterial){
+					n_i = 1.000293; // air refractive index
+					n_t = m.index;
+				}
+				else{
+					n_i = m.index;
+					n_t = 1.000293; // air refractive index
+					normal = (-1)* normal; // reverse the normal if it is going out from the object
+				}
+				// check total internal refraction
+				bool tir = false;
+				double n_r = n_i / n_t;
+				double normalDotIncomingLight = normal.dot((-1)*rayDirection);
+				double innerSquareRoot = 1 - n_r*n_r*(1 - normalDotIncomingLight*normalDotIncomingLight);
+				if (innerSquareRoot <= 0.0) tir = true;
+
+				// Refraction factor
+				if (!tir){
+					// use formula 16.33
+					vec3f refractedDirection = (n_r*normalDotIncomingLight - sqrt(1 - n_r*n_r*(1 - normalDotIncomingLight*normalDotIncomingLight)))*normal - n_r*(-1)*rayDirection;
+					ray refractionRay = ray(r.at(i.t), refractedDirection.normalize());
+					vec3f refractionIntensity = traceRay(scene, refractionRay, thresh, depth + 1);
+					intensity[0] += m.kt[0] * refractionIntensity[0];
+					intensity[1] += m.kt[1] * refractionIntensity[1];
+					intensity[2] += m.kt[2] * refractionIntensity[2];
+				}
+			}
+		}
+
+		return intensity;
+		//return m.shade(scene, r, i);
 	
 	} else {
 		// No intersection.  This ray travels to infinity, so we color

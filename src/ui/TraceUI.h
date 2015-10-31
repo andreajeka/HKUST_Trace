@@ -54,6 +54,10 @@ public:
 	int			getIntensityScale();
 	double		getDistanceScale();
 
+	void		setConstAttenuationVal(double value);
+	void		setLinearAttenuationVal(double value);
+	void		setQuadAttenuationVal(double value);
+
 private:
 	RayTracer*	raytracer;
 
