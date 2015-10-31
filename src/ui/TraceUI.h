@@ -28,6 +28,12 @@ public:
 
 	Fl_Slider*			m_sizeSlider;
 	Fl_Slider*			m_depthSlider;
+	Fl_Slider*			m_constAttenuationSlider;
+	Fl_Slider*			m_linearAttenuationSlider;
+	Fl_Slider*			m_quadAttenuationSlider;
+	Fl_Slider*			m_ambientAttenuationSlider;
+	Fl_Slider*			m_intensitySlider;
+	Fl_Slider*			m_distanceSlider;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -41,12 +47,24 @@ public:
 
 	int			getSize();
 	int			getDepth();
+	double		getConstAttenuationVal();
+	double		getLinearAttenuationVal();
+	double		getQuadAttenuationVal();
+	double		getAmbientLightValue();
+	int			getIntensityScale();
+	double		getDistanceScale();
 
 private:
 	RayTracer*	raytracer;
 
 	int			m_nSize;
 	int			m_nDepth;
+	double		m_nConstAttenuation;
+	double		m_nLinearAttenuation;
+	double		m_nQuadAttenuation;
+	double	    m_nAmbientLight;
+	int			m_nIntensity;
+	double	    m_nDistance;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -62,6 +80,12 @@ private:
 
 	static void cb_sizeSlides(Fl_Widget* o, void* v);
 	static void cb_depthSlides(Fl_Widget* o, void* v);
+	static void cb_constAttenuationSlides(Fl_Widget* o, void* v);
+	static void cb_linearAttenuationSlides(Fl_Widget* o, void* v);
+	static void cb_quadAttenuationSlides(Fl_Widget* o, void* v);
+	static void cb_ambientLightSlides(Fl_Widget* o, void* v);
+	static void cb_intensitySlides(Fl_Widget* o, void* v);
+	static void cb_distanceSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
