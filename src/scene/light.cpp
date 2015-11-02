@@ -19,20 +19,20 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& P ) const
 	ray r = ray(p, d); // from the point of intersection, look at the light
 
 	isect isecSR; // intersection of the shadow ray
-	vec3f colour = getColor(P); // colour of light source
+	vec3f intesity = vec3f(1.0, 1.0, 1.0); // colour of light source
 
 	while (scene->intersect(r, isecSR)) { // if the ray intersect with an object
 		if (isecSR.getMaterial().kt.iszero()) { // if the material of the object is opaque
 			return vec3f(0, 0, 0); // no shadow if opaque
 		}
 		else { // if transmissive
-			colour = prod(colour, isecSR.getMaterial().kt); // close to zero -> lower value
+			intesity = prod(intesity, isecSR.getMaterial().kt); // close to zero -> lower value
 			p = r.at(isecSR.t); // to find the next closest intersection
 			r = ray(p, d);
 		}
 	}
 
-	return colour;
+	return intesity;
 }
 
 vec3f DirectionalLight::getColor( const vec3f& P ) const
@@ -84,18 +84,18 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 	ray r = ray(p, d); // from the point of intersection, look at the light
 
 	isect isecSR; // intersection of the shadow ray
-	vec3f colour = getColor(P); // colour of light source
+	vec3f intesity = vec3f(1.0, 1.0, 1.0); // colour of light source
 	
 	while (scene->intersect(r, isecSR)) { // if the ray intersect with an object
 		if (isecSR.getMaterial().kt.iszero()) { // if the material of the object is opaque
 			return vec3f(0, 0, 0); // no shadow if opaque
 		}
 		else { // if transmissive
-			colour = prod(colour, isecSR.getMaterial().kt); // close to zero -> lower value
+			intesity = prod(intesity, isecSR.getMaterial().kt); // close to zero -> lower value
 			p = r.at(isecSR.t); // to find the next closest intersection
 			r = ray(p, d);
 		}
 	}
 
-	return colour;
+	return intesity;
 }

@@ -18,18 +18,16 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
     // You will need to call both distanceAttenuation() and shadowAttenuation()
     // somewhere in your code in order to compute shadows and light falloff.
 
-	vec3f Iphong;
 
-	Iphong = ke + prod(ka, scene->getIa()); // first 2 terms of the formula
-
+	// the diffuse and ambient terms are multiplied by (1-kt) as advised by the doc
+	vec3f Iphong = ke + prod(vec3f(1, 1, 1) - kt, prod(ka, scene->getIa())); // first 2 terms of the formula
 	vec3f P = r.at(i.t); // point of intersection
-	for (list<Light*>::const_iterator j = scene->beginLights(); j != scene->endLights(); j++) {
-		// seems like there is no light source intensity in the ray file??
 
+	for (list<Light*>::const_iterator j = scene->beginLights(); j != scene->endLights(); j++) {
 		vec3f attenuation = (*j)->distanceAttenuation(P) * (*j)->shadowAttenuation(P);
 		
 		vec3f L = (*j)->getDirection(P); // light direction
-		vec3f diffuse = kd * maximum(i.N * L, 0); // 
+		vec3f diffuse = prod(vec3f(1, 1, 1) - kt, kd * maximum(i.N * L, 0));
 
 		vec3f R = (2 * (i.N * L) * i.N) - L; // reflection
 		R = R.normalize();
