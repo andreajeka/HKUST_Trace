@@ -410,7 +410,7 @@ static Material *getMaterial( Obj *child, const mmap& bindings )
 	return processMaterial( child );
 }
 
-static Material *processMaterial( Obj *child, mmap *bindings )
+static Material *processMaterial(Obj *child, mmap *bindings)
 // Generate a material from a parse sub-tree
 //
 // child   - root of parse tree
@@ -421,30 +421,29 @@ static Material *processMaterial( Obj *child, mmap *bindings )
     mat = new Material();
 	
     if( hasField( child, "emissive" ) ) {
-        mat->ke = tupleToVec( getField( child, "emissive" ) );
+        mat->setEmissive(tupleToVec( getField( child, "emissive" )));
     }
     if( hasField( child, "ambient" ) ) {
-        mat->ka = tupleToVec( getField( child, "ambient" ) );
+		mat->setAmbient(tupleToVec(getField(child, "ambient")));
     }
     if( hasField( child, "specular" ) ) {
-        mat->ks = tupleToVec( getField( child, "specular" ) );
+		mat->setSpecular(tupleToVec(getField(child, "specular")));
     }
     if( hasField( child, "diffuse" ) ) {
-        mat->kd = tupleToVec( getField( child, "diffuse" ) );
+		mat->setDiffuse(tupleToVec(getField(child, "diffuse")));
     }
     if( hasField( child, "reflective" ) ) {
-        mat->kr = tupleToVec( getField( child, "reflective" ) );
-    } else {
-        mat->kr = mat->ks; // defaults to ks if none given.
-    }
+		mat->setReflective(tupleToVec(getField(child, "reflective")));
+    } 
+
     if( hasField( child, "transmissive" ) ) {
-        mat->kt = tupleToVec( getField( child, "transmissive" ) );
+		mat->setTransmissive(tupleToVec(getField(child, "transmissive")));
     }
     if( hasField( child, "index" ) ) { // index of refraction
-        mat->index = getField( child, "index" )->getScalar();
+		mat->setIndex(getField(child, "index")->getScalar());
     }
     if( hasField( child, "shininess" ) ) {
-        mat->shininess = getField( child, "shininess" )->getScalar();
+        mat->setShininess(getField( child, "shininess" )->getScalar());
     }
 
     if( bindings != NULL ) {

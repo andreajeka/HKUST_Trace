@@ -33,8 +33,6 @@ private:
 	Scene *scene;
 
 	bool m_bSceneLoaded;
-	double productKr;
-	double productKt;
 };
 
 #endif // __RAYTRACER_H__

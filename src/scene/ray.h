@@ -38,6 +38,11 @@ protected:
 };
 
 // The description of an intersection point.
+enum INTERSECT_SURFACE {
+	ISECT_TRAVEL = 0,
+	ISECT_IN,
+	ISECT_OUT
+};
 
 class isect
 {
@@ -88,6 +93,7 @@ public:
 
     const Material &getMaterial() const;
     // Other info here.
+	enum INTERSECT_SURFACE state;
 };
 
 const double RAY_EPSILON = 0.00001;
