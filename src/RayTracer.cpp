@@ -21,7 +21,7 @@
 // in an initial ray weight of (0.0,0.0,0.0) and an initial recursion depth of 0.
 vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
-    ray r( vec3f(0,0,0), vec3f(0,0,0) );
+    ray r( vec3f(0,0,0), vec3f(0,0,0), ray::VISIBILITY);
     scene->getCamera()->rayThrough( x,y,r );
 	return traceRay(scene, r, vec3f(1.0, 1.0, 1.0), traceUI->getDepth()).clamp();
 }
@@ -32,8 +32,6 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 {
 	isect i;
 	vec3f colorC;
-	//scene->useKdTree = traceUI->m_kdTree;
-	// cout<<scene->useKdTree<<endl;
 	if (scene->intersect(r, i)) {
 		// YOUR CODE HERE
 
@@ -61,7 +59,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 		{
 			vec3f reflectedDirection = cosVector + sinVector;
 			reflectedDirection.normalize();
-			ray reflectedRay(Qpt, reflectedDirection);
+			ray reflectedRay(Qpt, reflectedDirection, ray::REFLECTION);
 			intensity = intensity + prod(m.kr(i), traceRay(scene, reflectedRay, thresh, depth - 1));
 		}
 		//Refracted Ray
@@ -95,7 +93,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 			{
 				vec3f refractedDirection = cosT + iDirection*sinT;
 				refractedDirection.normalize();
-				ray refractedRay(Qpt, iDirection * refractedDirection);
+				ray refractedRay(Qpt, iDirection * refractedDirection, ray::REFRACTION);
 				intensity = intensity + prod(m.kt(i), traceRay(scene, refractedRay, thresh, depth - 1));
 			}
 		}

@@ -17,6 +17,16 @@ class SceneObject;
 
 class ray {
 public:
+	enum RayType
+	{
+		VISIBILITY,
+		REFLECTION,
+		REFRACTION,
+		REFRACTIONOUT,
+		SHADOW
+	};
+	ray(const vec3f &pp, const vec3f &dd, RayType tt = VISIBILITY)
+		: p( pp ), d( dd ), t( tt ) {}
 	ray( const vec3f& pp, const vec3f& dd )
 		: p( pp ), d( dd ) {}
 	ray( const ray& other ) 
@@ -31,17 +41,12 @@ public:
 
 	vec3f getPosition() const { return p; }
 	vec3f getDirection() const { return d; }
+	RayType type() const { return t; }
 
 protected:
 	vec3f p;
 	vec3f d;
-};
-
-// The description of an intersection point.
-enum INTERSECT_SURFACE {
-	ISECT_TRAVEL = 0,
-	ISECT_IN,
-	ISECT_OUT
+	RayType t;
 };
 
 class isect

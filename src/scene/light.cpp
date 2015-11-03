@@ -38,8 +38,8 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& P ) const
 	vec3f d = getDirection(P);
 	d.normalize();
 	isect  isecSR;
-	ray shadowRay(P, d);
-	if (this->getScene()->intersect(shadowRay, isecSR))  // if the ray intersect with an object
+	ray r(P, d, ray::SHADOW);
+	if (this->getScene()->intersect(r, isecSR))  // if the ray intersect with an object
 	{
 		return vec3f(0, 0, 0); // no shadow if opaque
 	}
@@ -112,7 +112,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 
 	vec3f d = (position - P);
 	d.normalize();
-	ray r(P, d);
+	ray r(P, d, ray::SHADOW);
 
 	isect isecSR;
 	
