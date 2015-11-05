@@ -43,15 +43,17 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 		// Instead of just returning the result of shade(), add some
 		// more steps: add in the contributions from reflected and refracted
 		// rays.
-		//cout << i.t << " " << r.getPosition()[0] << r.getPosition()[1] << r.getPosition()[2] << r.getDirection()[0] << r.getDirection()[1] << r.getDirection()[2] << endl;
+
 		const Material& m = i.getMaterial();
 		vec3f intensity = m.shade(scene, r, i);
 		if (depth == 0) return intensity;
+		if (thresh.length() < AdaptiveThreshold) return intensity;
 
 		vec3f Qpt = r.at(i.t);
 		vec3f minusD = -1 * r.getDirection();
 		vec3f cosVector = i.N * (minusD * i.N);
 		vec3f sinVector = cosVector + r.getDirection();
+		vec3f newThresh;
 
 		// Reflected Ray
 		if (!m.kr(i).iszero())
@@ -59,8 +61,8 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 			vec3f reflectedDirection = cosVector + sinVector;
 			reflectedDirection.normalize();
 			ray reflectedRay(Qpt, reflectedDirection, ray::REFLECTION);
-			// cout << reflectedRay.getDirection()[0] << endl;
-			intensity = intensity + prod(m.kr(i), traceRay(scene, reflectedRay, thresh, depth - 1));
+			newThresh = prod(thresh, i.getMaterial().kr(i)); // change the threshold value
+			intensity = intensity + prod(m.kr(i), traceRay(scene, reflectedRay, newThresh, depth - 1));
 		}
 
 		//Refracted Ray
@@ -98,7 +100,8 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 				vec3f refractedDirection = cosT + iDirection*sinT;
 				refractedDirection.normalize();
 				ray refractedRay(Qpt, iDirection * refractedDirection, ray::REFRACTION);
-				intensity = intensity + prod(m.kt(i), traceRay(scene, refractedRay, thresh, depth - 1));
+				newThresh = prod(newThresh, i.getMaterial().kt(i)); // change the threshold value
+				intensity = intensity + prod(m.kt(i), traceRay(scene, refractedRay, newThresh, depth - 1));
 			}
 		}
 		colorC = intensity;
@@ -117,6 +120,7 @@ RayTracer::RayTracer()
 	buffer = NULL;
 	buffer_width = buffer_height = 256;
 	scene = NULL;
+	AdaptiveThreshold = 0.0;
 
 	m_bSceneLoaded = false;
 }
@@ -126,6 +130,10 @@ RayTracer::~RayTracer()
 {
 	delete [] buffer;
 	delete scene;
+}
+
+void RayTracer::setAdaptiveThreshold(double thres) {
+	AdaptiveThreshold = thres;
 }
 
 void RayTracer::getBuffer( unsigned char *&buf, int &w, int &h )

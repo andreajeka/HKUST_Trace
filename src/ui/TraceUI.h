@@ -53,6 +53,7 @@ public:
 	double		getAmbientLightValue();
 	int			getIntensityScale();
 	double		getDistanceScale();
+	double		getAdaptiveThreshold();
 
 	void		setConstAttenuationVal(double value);
 	void		setLinearAttenuationVal(double value);
@@ -69,6 +70,7 @@ private:
 	double	    m_nAmbientLight;
 	int			m_nIntensity;
 	double	    m_nDistance;
+	double		m_nAdaptive;
 
 // static class members
 	static Fl_Menu_Item menuitems[];
@@ -90,6 +92,7 @@ private:
 	static void cb_ambientLightSlides(Fl_Widget* o, void* v);
 	static void cb_intensitySlides(Fl_Widget* o, void* v);
 	static void cb_distanceSlides(Fl_Widget* o, void* v);
+	static void cb_adaptiveSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

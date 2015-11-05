@@ -111,6 +111,10 @@ void TraceUI::cb_distanceSlides(Fl_Widget* o, void* v) {
 	((TraceUI*)(o->user_data()))->m_nDistance = double(((Fl_Slider *)o)->value());
 }
 
+void TraceUI::cb_adaptiveSlides(Fl_Widget* o, void* v) {
+	((TraceUI*)(o->user_data()))->m_nAdaptive = double(((Fl_Slider *)o)->value());
+}
+
 void TraceUI::cb_depthSlides(Fl_Widget* o, void* v)
 {
 	((TraceUI*)(o->user_data()))->m_nDepth=int( ((Fl_Slider *)o)->value() ) ;
@@ -130,6 +134,7 @@ void TraceUI::cb_render(Fl_Widget* o, void* v)
 		pUI->m_traceGlWindow->show();
 
 		pUI->raytracer->traceSetup(width, height);
+		pUI->raytracer->setAdaptiveThreshold(pUI->getAdaptiveThreshold());
 		
 		// Save the window label
 		const char *old_label = pUI->m_traceGlWindow->label();
@@ -243,6 +248,10 @@ double TraceUI::getDistanceScale() {
 	return m_nDistance;
 }
 
+double TraceUI::getAdaptiveThreshold() {
+	return m_nAdaptive;
+}
+
 void TraceUI::setConstAttenuationVal(double value){
 	m_nConstAttenuation = value;
 }
@@ -278,8 +287,9 @@ TraceUI::TraceUI() {
 	m_nAmbientLight = 0.20;
 	m_nIntensity = 1;
 	m_nDistance = 1.87;
+	m_nAdaptive = 0.0;
 
-	m_mainWindow = new Fl_Window(100, 40, 400, 250, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 400, 275, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 320, 25);
@@ -388,6 +398,19 @@ TraceUI::TraceUI() {
 		m_constAttenuationSlider->value(m_nDistance);
 		m_constAttenuationSlider->align(FL_ALIGN_RIGHT);
 		m_constAttenuationSlider->callback(cb_distanceSlides);
+
+		// install adaptive termination slider
+		m_constAttenuationSlider = new Fl_Value_Slider(10, 230, 180, 20, "Adaptive Termination");
+		m_constAttenuationSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_constAttenuationSlider->type(FL_HOR_NICE_SLIDER);
+		m_constAttenuationSlider->labelfont(FL_COURIER);
+		m_constAttenuationSlider->labelsize(12);
+		m_constAttenuationSlider->minimum(0);
+		m_constAttenuationSlider->maximum(1);
+		m_constAttenuationSlider->step(0.01);
+		m_constAttenuationSlider->value(m_nAdaptive);
+		m_constAttenuationSlider->align(FL_ALIGN_RIGHT);
+		m_constAttenuationSlider->callback(cb_adaptiveSlides);
 
 		m_renderButton = new Fl_Button(240, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));

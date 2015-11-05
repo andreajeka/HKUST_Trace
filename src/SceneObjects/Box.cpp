@@ -29,10 +29,7 @@ bool Box::intersectLocal( const ray& r, isect& i ) const {
 	}
 
 	i.obj = this;
-	if (Tnear < RAY_EPSILON) // only need to check if less than 0 as ray always starts from (0, 0, 0)
-		i.t = Tfar;
-	else
-		i.t = Tnear;
+	i.t = Tnear;
 
 	vec3f isectP = r.at(i.t);
 	for (int j = 0; j < 3; j++) {

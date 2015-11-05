@@ -16,7 +16,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& P ) const
     // You should implement shadow-handling code here.
 
 	vec3f d = getDirection(P); // direction from the point to be shaded towards the light source
-	vec3f p = P; // point to be shaded
+	vec3f p = P + d * RAY_EPSILON; // point to be shaded
 	ray r = ray(p, d, ray::SHADOW); // from the point of intersection, look at the light
 	
 	isect isecSR; // intersection of the shadow ray
@@ -28,7 +28,7 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& P ) const
 		}
 		else { // if transmissive
 			intensity = prod(intensity, isecSR.getMaterial().kt(isecSR)); // close to zero -> lower value
-			p = r.at(isecSR.t); // to find the next closest intersection
+			p = r.at(isecSR.t) + d * RAY_EPSILON; // to find the next closest intersection
 			r = ray(p, d, ray::SHADOW);
 		}
 	}
@@ -91,8 +91,9 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 	// You should implement shadow-handling code here.
 
 	vec3f d = getDirection(P); // direction from the point to be shaded towards the light source
-	vec3f p = P; // point to be shaded
+	vec3f p = P + d * RAY_EPSILON; // point to be shaded
 	ray r = ray(p, d, ray::SHADOW); // from the point of intersection, look at the light
+
 	isect isecSR; // intersection of the shadow ray
 	vec3f intensity = vec3f(1.0, 1.0, 1.0); // colour of light source
 
@@ -102,7 +103,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 		}
 		else { // if transmissive
 			intensity = prod(intensity, isecSR.getMaterial().kt(isecSR)); // close to zero -> lower value
-			p = r.at(isecSR.t); // to find the next closest intersection
+			p = r.at(isecSR.t) + d * RAY_EPSILON; // to find the next closest intersection
 			r = ray(p, d, ray::SHADOW);
 		}
 	}
