@@ -31,6 +31,7 @@ private:
 	int buffer_width, buffer_height;
 	int bufferSize;
 	Scene *scene;
+	float maxThresh;
 
 	bool m_bSceneLoaded;
 };
