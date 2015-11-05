@@ -43,7 +43,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 		// Instead of just returning the result of shade(), add some
 		// more steps: add in the contributions from reflected and refracted
 		// rays.
-
+		//cout << i.t << " " << r.getPosition()[0] << r.getPosition()[1] << r.getPosition()[2] << r.getDirection()[0] << r.getDirection()[1] << r.getDirection()[2] << endl;
 		const Material& m = i.getMaterial();
 		vec3f intensity = m.shade(scene, r, i);
 		if (depth == 0) return intensity;
@@ -59,6 +59,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 			vec3f reflectedDirection = cosVector + sinVector;
 			reflectedDirection.normalize();
 			ray reflectedRay(Qpt, reflectedDirection, ray::REFLECTION);
+			// cout << reflectedRay.getDirection()[0] << endl;
 			intensity = intensity + prod(m.kr(i), traceRay(scene, reflectedRay, thresh, depth - 1));
 		}
 
@@ -86,13 +87,14 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 				// cosThetaI = i.N * r.d;
 				iDirection = -1;
 			}
+			
 			double n = n_i / n_r;
-			vec3f sinT = (n_i / n_r) * sinVector;
-			// vec3f cosT = (-1 * i.N) * sqrt(1 - sinT*sinT);
-			// not sure if there are any differences between the eqn, please check!!!!!!
-			vec3f cosT = (-1 * i.N) * sqrt(1 - n * n * (1 - (minusD * i.N) * (minusD * i.N)));
-			if (cosineAngle < criticalAngle)
+			if (1 - n * n * (1 - (minusD * i.N) * (minusD * i.N)) > 0.0) // NO total internal refraction
 			{
+				vec3f sinT = n * sinVector;
+				// vec3f cosT = (-1 * i.N) * sqrt(1 - sinT*sinT);
+				// not sure if there are any differences between the two eqn, please check!!!!!!
+				vec3f cosT = (-1 * i.N) * sqrt(1 - n * n * (1 - (minusD * i.N) * (minusD * i.N)));
 				vec3f refractedDirection = cosT + iDirection*sinT;
 				refractedDirection.normalize();
 				ray refractedRay(Qpt, iDirection * refractedDirection, ray::REFRACTION);
