@@ -117,7 +117,7 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 
 	isect isecSR;
 
-	if (this->getScene()->intersect(r, isecSR)) // if the ray intersect with an object
+	if (scene->intersect(r, isecSR)) // if the ray intersect with an object
 	{
 		double lightDistance = (position - P).length_squared();
 		vec3f Qpoint = r.at(isecSR.t);
