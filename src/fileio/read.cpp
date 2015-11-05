@@ -419,7 +419,7 @@ static Material *processMaterial(Obj *child, mmap *bindings)
 {
     Material *mat;
     mat = new Material();
-	
+	vec3f specular = vec3f(0.0, 0.0, 0.0);
     if( hasField( child, "emissive" ) ) {
         mat->setEmissive(tupleToVec( getField( child, "emissive" )));
     }
@@ -427,14 +427,16 @@ static Material *processMaterial(Obj *child, mmap *bindings)
 		mat->setAmbient(tupleToVec(getField(child, "ambient")));
     }
     if( hasField( child, "specular" ) ) {
-		mat->setSpecular(tupleToVec(getField(child, "specular")));
+		specular = tupleToVec(getField(child, "specular"));
+		mat->setSpecular(specular);
     }
     if( hasField( child, "diffuse" ) ) {
 		mat->setDiffuse(tupleToVec(getField(child, "diffuse")));
     }
     if( hasField( child, "reflective" ) ) {
 		mat->setReflective(tupleToVec(getField(child, "reflective")));
-    } 
+	}
+	else mat->setReflective(specular);
 
     if( hasField( child, "transmissive" ) ) {
 		mat->setTransmissive(tupleToVec(getField(child, "transmissive")));

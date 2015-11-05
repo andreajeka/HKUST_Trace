@@ -90,33 +90,43 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 	// YOUR CODE HERE:
 	// You should implement shadow-handling code here.
 
-	vec3f d = getDirection(P); // direction from the point to be shaded towards the light source
-	vec3f p = P + d * RAY_EPSILON; // point to be shaded
-	ray r = ray(p, d, ray::SHADOW); // from the point of intersection, look at the light
+	//vec3f d = getDirection(P); // direction from the point to be shaded towards the light source
+	//vec3f p = P + d * RAY_EPSILON; // point to be shaded
+	//ray r = ray(p, d, ray::SHADOW); // from the point of intersection, look at the light
 
-	isect isecSR; // intersection of the shadow ray
-	vec3f intensity = vec3f(1.0, 1.0, 1.0); // colour of light source
+	//isect isecSR; // intersection of the shadow ray
+	//vec3f intensity = vec3f(1.0, 1.0, 1.0); // colour of light source
 
-	while (scene->intersect(r, isecSR)) { // if the ray intersect with an object
-		if (isecSR.getMaterial().kt(isecSR).iszero()) { // if the material of the object is opaque
-			return vec3f(0, 0, 0); // no shadow if opaque
-		}
-		else { // if transmissive
-			intensity = prod(intensity, isecSR.getMaterial().kt(isecSR)); // close to zero -> lower value
-			p = r.at(isecSR.t) + d * RAY_EPSILON; // to find the next closest intersection
-			r = ray(p, d, ray::SHADOW);
+	//while (scene->intersect(r, isecSR)) { // if the ray intersect with an object
+	//	if (isecSR.getMaterial().kt(isecSR).iszero()) { // if the material of the object is opaque
+	//		return vec3f(0, 0, 0); // no shadow if opaque
+	//	}
+	//	else { // if transmissive
+	//		intensity = prod(intensity, isecSR.getMaterial().kt(isecSR)); // close to zero -> lower value
+	//		p = r.at(isecSR.t) + d * RAY_EPSILON; // to find the next closest intersection
+	//		r = ray(p, d, ray::SHADOW);
+	//	}
+	//}
+
+	//return intensity;
+
+	// The point light in this code works for reflect.ray
+	vec3f d = (position - P);
+	d.normalize();
+	ray r(P, d, ray::SHADOW);
+
+	isect isecSR;
+
+	if (this->getScene()->intersect(r, isecSR)) // if the ray intersect with an object
+	{
+		double lightDistance = (position - P).length_squared();
+		vec3f Qpoint = r.at(isecSR.t);
+		double distanceSq = (Qpoint - P).length_squared();
+		if (distanceSq < lightDistance) // taken into account all material type
+		{
+			const Material& material = isecSR.getMaterial();
+			return prod(material.kt(isecSR), color);
 		}
 	}
-
-	return intensity;
-
-	//vec3f d = getDirection(P);
-	//d.normalize();
-	//isect  isecSR;
-	//ray r(P, d, ray::SHADOW);
-	//if (this->getScene()->intersect(r, isecSR))  // if the ray intersect with an object
-	//{
-	//	return vec3f(0, 0, 0); // no shadow if opaque
-	//}
-	//return color; // return colour of light source
+	return color;
 }
