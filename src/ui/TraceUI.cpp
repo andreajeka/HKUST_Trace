@@ -298,7 +298,7 @@ TraceUI::TraceUI() {
 	m_nIntensity = 1;
 	m_nDistance = 1.87;
 	m_nAdaptive = 0.0;
-	m_nSubPixel = 0;
+	m_nSubPixel = 1;
 
 	m_mainWindow = new Fl_Window(100, 40, 400, 300, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
@@ -429,7 +429,7 @@ TraceUI::TraceUI() {
 		m_subPixelSlider->type(FL_HOR_NICE_SLIDER);
 		m_subPixelSlider->labelfont(FL_COURIER);
 		m_subPixelSlider->labelsize(12);
-		m_subPixelSlider->minimum(0);
+		m_subPixelSlider->minimum(1);
 		m_subPixelSlider->maximum(5);
 		m_subPixelSlider->step(1);
 		m_subPixelSlider->value(m_nSubPixel);
