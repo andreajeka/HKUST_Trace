@@ -417,7 +417,7 @@ TraceUI::TraceUI() {
 		m_adaptiveTerminationSlider->labelfont(FL_COURIER);
 		m_adaptiveTerminationSlider->labelsize(12);
 		m_adaptiveTerminationSlider->minimum(0);
-		m_adaptiveTerminationSlider->maximum(1);
+		m_adaptiveTerminationSlider->maximum(5);
 		m_adaptiveTerminationSlider->step(0.01);
 		m_adaptiveTerminationSlider->value(m_nAdaptive);
 		m_adaptiveTerminationSlider->align(FL_ALIGN_RIGHT);

@@ -53,7 +53,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 		vec3f minusD = -1 * r.getDirection();
 		vec3f cosVector = i.N * (minusD * i.N);
 		vec3f sinVector = cosVector + r.getDirection();
-		vec3f newThresh;
+		vec3f newThresh = thresh;
 
 		// Reflected Ray
 		if (!m.kr(i).iszero())
@@ -61,7 +61,7 @@ vec3f RayTracer::traceRay( Scene *scene, const ray& r, const vec3f& thresh, int 
 			vec3f reflectedDirection = cosVector + sinVector;
 			reflectedDirection.normalize();
 			ray reflectedRay(Qpt, reflectedDirection, ray::REFLECTION);
-			newThresh = prod(thresh, i.getMaterial().kr(i)); // change the threshold value
+			newThresh = prod(newThresh, i.getMaterial().kr(i)); // change the threshold value
 			intensity = intensity + prod(m.kr(i), traceRay(scene, reflectedRay, newThresh, depth - 1));
 		}
 
